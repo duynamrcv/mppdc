@@ -19,10 +19,10 @@ DREF = 3*ROBOT_RADIUS
 
 W_sep = 1.0
 W_dir = 1.0
-W_nav = 5.0
+W_nav = 20.0
 W_u = 4e-1
-W_obs = 5.0
-W_col = 5.0
+W_obs = 20.0
+W_col = 20.0
 
 # Scenario
 STARTS = np.array([[-8, 3, 5, 0, 0, 0],

@@ -14,16 +14,16 @@ NUM_UAV = TOPOLOGY.shape[0]
 VREF = 1.0
 UREF = np.array([1,0,0])
 DREF = 3*ROBOT_RADIUS
-VMAX = 1.0
-UMAX = 1.0
+VMAX = 1.5
+UMAX = 0.8
 BETA = 1.0
 
-W_sep = 1.0
-W_dir = 1.0
-W_nav = 20.0
+W_sep = 2.0/15
+W_dir = 1.0/15
+W_nav = 1.0
 W_u = 4e-1
-W_obs = 2.0
-W_col = 1.0
+W_obs = 2.0/15
+W_col = 1.0/15
 
 # Scenario
 STARTS = np.array([[-8., 3., 5., 0, 0, 0],

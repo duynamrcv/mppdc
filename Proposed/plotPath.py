@@ -50,11 +50,10 @@ plt.figure()
 distances = np.array([np.linalg.norm(path0[:,1:4]-path1[:,1:4], axis=1),
                       np.linalg.norm(path1[:,1:4]-path2[:,1:4], axis=1),
                       np.linalg.norm(path2[:,1:4]-path0[:,1:4], axis=1)]).T
-plt.fill_between(path0[:,0], np.min(distances,axis=1), np.max(distances,axis=1), color="#1f77b4", label="Max/Min", alpha=0.3)
-plt.plot(path0[:,0], np.mean(distances,axis=1), 'b-', label="Average")
+plt.plot(path0[:,0], np.min(distances,axis=1), 'b-', label="")
 plt.plot([path0[0,0], path0[-1,0]], [2*ROBOT_RADIUS, 2*ROBOT_RADIUS], 'k--', label="Safety radius")
 plt.xlabel("Time (s)")
-plt.ylabel("Inter-agent distance (m)")
+plt.ylabel("Inter-agent distance $\min(d_{ij})$(m)")
 plt.xlim([0, path0[-1,0]])
 plt.legend()
 plt.grid(True)

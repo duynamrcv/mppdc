@@ -47,7 +47,7 @@ class Drone:
         if norm_vel > VMAX:
             next_velocity = next_velocity/norm_vel*VMAX
 
-        next_position = position + next_velocity*dt
+        next_position = position + velocity*dt
 
         self.state = np.concatenate([next_position, next_velocity])
         self.control = control
@@ -86,12 +86,6 @@ class Drone:
             v_c = self.behaviorCollision(drones)
             vel = W_nav*v_m + W_sep*v_t + W_obs*v_o + W_col*v_c
 
-        # if traj_ref is not None:
-        #     self.gt = traj_ref[:self.n_state]
-        # else:
-        #     self.gt = None
-        
-
         control = (vel - self.state[3:])/self.timestep
 
         # Control signal alignment
@@ -107,17 +101,22 @@ class Drone:
     
     def behaviorFormation(self, drones):
         v_f = np.zeros(self.n_control)
+        gt = 0
         for i in range(NUM_UAV):
             if i == self.index:
                 continue
             v_f += (drones[i].state[:3]-self.state[:3]) -\
                    (TOPOLOGY[i,:] - TOPOLOGY[self.index,:])*self.scaling_factor
+            gt += drones[i].state[:3] - (TOPOLOGY[i,:] - TOPOLOGY[self.index,:])*self.scaling_factor
+        self.gt = np.concatenate([gt,self.state[3:]])/(NUM_UAV-1)
         return v_f
     
     def behaviorTailgating(self, drones, leader_idx):
         if leader_idx == -1:
+            self.gt = self.state
             return self.state[3:]
         v_t = drones[leader_idx].state[:3] - self.state[:3] - DREF*UREF + drones[leader_idx].state[3:]
+        self.gt = drones[leader_idx].state - np.concatenate([DREF*UREF, drones[leader_idx].state[3:]])
         return v_t
 
     def behaviorObstacle(self, obstacles):

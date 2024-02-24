@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from config import *
 
-animation = True
+animation = False
 
 def getCircle(x,y,r):
     theta = np.linspace( 0 , 2 * np.pi , 150 )   
@@ -73,21 +73,21 @@ plt.ylabel("Order")
 plt.xlim([0, path0[-1,0]])
 plt.grid(True)
 
-# # Plot errors
-# plt.figure()
-# plt.plot(path0[:,0], np.linalg.norm(path0[:,1:4]-path0[:,12:15],axis=1), label="Drone 0")
-# plt.plot(path0[:,0], np.linalg.norm(path1[:,1:4]-path1[:,12:15],axis=1), label="Drone 1")
-# plt.plot(path0[:,0], np.linalg.norm(path2[:,1:4]-path2[:,12:15],axis=1), label="Drone 2")
-# err = np.array([np.linalg.norm(path0[:,1:4]-path0[:,12:15], axis=1),
-#                 np.linalg.norm(path1[:,1:4]-path1[:,12:15], axis=1),
-#                 np.linalg.norm(path2[:,1:4]-path2[:,12:15], axis=1)]).T
-# plt.fill_between(path0[:,0], np.min(err,axis=1), np.max(err,axis=1), color="#1f77b4", label="Max/Min", alpha=0.3)
-# plt.plot(path0[:,0], np.mean(err,axis=1), 'b-', label="Average")
-# plt.xlabel("Time (s)")
-# plt.ylabel("Formation error (m)")
-# plt.xlim([0, path0[-1,0]])
-# plt.legend()
-# plt.grid(True)
+# Plot errors
+plt.figure()
+plt.plot(path0[:,0], np.linalg.norm(path0[:,1:4]-path0[:,12:15],axis=1), label="Drone 0")
+plt.plot(path0[:,0], np.linalg.norm(path1[:,1:4]-path1[:,12:15],axis=1), label="Drone 1")
+plt.plot(path0[:,0], np.linalg.norm(path2[:,1:4]-path2[:,12:15],axis=1), label="Drone 2")
+err = np.array([np.linalg.norm(path0[:,1:4]-path0[:,12:15], axis=1),
+                np.linalg.norm(path1[:,1:4]-path1[:,12:15], axis=1),
+                np.linalg.norm(path2[:,1:4]-path2[:,12:15], axis=1)]).T
+plt.fill_between(path0[:,0], np.min(err,axis=1), np.max(err,axis=1), color="#1f77b4", label="Max/Min", alpha=0.3)
+plt.plot(path0[:,0], np.mean(err,axis=1), 'b-', label="Average")
+plt.xlabel("Time (s)")
+plt.ylabel("Formation error (m)")
+plt.xlim([0, path0[-1,0]])
+plt.legend()
+plt.grid(True)
 
 # Plot number of correlation
 plt.figure()

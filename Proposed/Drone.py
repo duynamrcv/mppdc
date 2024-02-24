@@ -29,6 +29,7 @@ class Drone:
 
         # Drone radius
         self.radius = radius
+        self.first_time = 0
 
         # Drone control bounds
         self.control_max = [ 2.0, 2.0, 0.0]
@@ -107,7 +108,11 @@ class Drone:
         traj = self.predictTrajectory(state, u)
 
         c_u = self.costControl(u)
-        c_sep = self.costTracking(traj, traj_ref)
+        c_sep = 0
+        if self.first_time > 1:
+            c_sep = self.costTracking(traj, traj_ref)
+        else:
+            self.first_time += 1
         c_dir = self.costDirection(traj)
         c_nav = self.costNavigation(traj)
         c_obs = self.costObstacle(traj, obstacles)
