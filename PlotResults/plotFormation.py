@@ -43,9 +43,9 @@ for coord in coords:
 plt.plot([], [], label="Environment surface", **kwargs)
 
 # Plot paths
-plt.plot(p_path0[:,1], p_path0[:,2], label="Drone 0")
-plt.plot(p_path1[:,1], p_path1[:,2], label="Drone 1")
-plt.plot(p_path2[:,1], p_path2[:,2], label="Drone 2")
+plt.plot(p_path0[:,1], p_path0[:,2], "r-", label="Drone 0")
+plt.plot(p_path1[:,1], p_path1[:,2], "g-", label="Drone 1")
+plt.plot(p_path2[:,1], p_path2[:,2], "b-", label="Drone 2")
 
 # Plot formation
 step = math.ceil(p_path0.shape[0]/num)
@@ -78,9 +78,9 @@ for coord in coords:
 plt.plot([], [], label="Environment surface", **kwargs)
 
 # Plot paths
-plt.plot(b_path0[:,1], b_path0[:,2], label="Drone 0")
-plt.plot(b_path1[:,1], b_path1[:,2], label="Drone 1")
-plt.plot(b_path2[:,1], b_path2[:,2], label="Drone 2")
+plt.plot(b_path0[:,1], b_path0[:,2], "r-", label="Drone 0")
+plt.plot(b_path1[:,1], b_path1[:,2], "g-", label="Drone 1")
+plt.plot(b_path2[:,1], b_path2[:,2], "b-", label="Drone 2")
 
 # Plot formation
 step = math.ceil(b_path0.shape[0]/num)
@@ -113,9 +113,9 @@ for coord in coords:
 plt.plot([], [], label="Environment surface", **kwargs)
 
 # Plot paths
-plt.plot(s_path0[:,1], s_path0[:,2], label="Drone 0")
-plt.plot(s_path1[:,1], s_path1[:,2], label="Drone 1")
-plt.plot(s_path2[:,1], s_path2[:,2], label="Drone 2")
+plt.plot(s_path0[:,1], s_path0[:,2], "r-", label="Drone 0")
+plt.plot(s_path1[:,1], s_path1[:,2], "g-", label="Drone 1")
+plt.plot(s_path2[:,1], s_path2[:,2], "b-", label="Drone 2")
 
 # Plot formation
 step = math.ceil(s_path0.shape[0]/num)
