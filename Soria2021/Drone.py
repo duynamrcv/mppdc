@@ -143,7 +143,7 @@ class Drone:
         dy = retraj[:,1]-obstacles[:,1,None]
         r = np.hypot(dx, dy)
         rs = np.min(r)
-        cost_obs = 1/(rs-ROBOT_RADIUS)
+        cost_obs = 1/rs
         return cost_obs
     
     def costInterAgent(self, traj, drones):

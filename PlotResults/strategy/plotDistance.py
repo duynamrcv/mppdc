@@ -8,7 +8,7 @@ ROBOT_RADIUS = 0.3
 
 ## Load comparison files
 # Behavior
-b_path = "/home/duynam/MPC_formation_changing/Behavioral/"
+b_path = "/home/duynam/MPC_formation_changing/Soria2021/"
 b_path0 = np.load(b_path+"path_0.npy")
 b_path1 = np.load(b_path+"path_1.npy")
 b_path2 = np.load(b_path+"path_2.npy")
@@ -35,5 +35,6 @@ plt.ylabel("Inter-agent distance $\min(d_{ij})q$ (m)")
 plt.xlim([0, max(b_path0[-1,0],p_path0[-1,0])])
 plt.legend()
 plt.grid(True)
+plt.tight_layout()
 plt.savefig("/home/duynam/MPC_formation_changing/PlotResults/results/strategy_dc.pdf", format="pdf", bbox_inches="tight")
 plt.show()
