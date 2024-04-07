@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # Initialize Drone
     for i in range(NUM_UAV):
         drone = Drone(i, STARTS[i,:], np.array([0,0,0]), ROBOT_RADIUS)
-        drone.setupController(horizon_length=10, dt=TIMESTEP)
+        drone.setupController(horizon_length=15, dt=TIMESTEP)
         drones.append(drone)
     
     compute_times = []

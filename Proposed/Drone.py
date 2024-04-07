@@ -25,8 +25,6 @@ class Drone:
         self.n_state = 6
         self.n_control = 3
 
-        self.gt = self.state
-
         # Drone radius
         self.radius = radius
         self.first_time = 0
@@ -36,7 +34,7 @@ class Drone:
         self.control_min = [-0.0,-2.0, 0.0]
         
         # Store drone path
-        self.path = [np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor], self.gt])]
+        self.path = [np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor]])]
 
     def updateState(self, control:np.array, dt:float):
         """
@@ -55,9 +53,7 @@ class Drone:
         self.time_stamp = self.time_stamp + dt
 
         # Store
-        if self.gt is None:
-            self.gt = self.state
-        self.path.append(np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor], self.gt]))
+        self.path.append(np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor]]))
 
     def setupController(self, horizon_length=20, dt=0.1):
         # Boundary
@@ -87,17 +83,15 @@ class Drone:
         else:
             leader_idx = self.selectLeader(drones)
             traj_ref = self.getTrajectoryFollow(leader_idx, drones)
-        if traj_ref is not None:
-            self.gt = traj_ref[:self.n_state]
-        else:
-            self.gt = None
+        # self.mode = Mode.TAILGATING
+        
         # u0 = np.random.rand(self.control.shape[0]*self.horizon_length)
         u0 = self.controls_prediction
         def cost_fn(u): return self.costFunction(u, state, traj_ref, drones, observed_obstacles)
 
         bounds = Bounds(self.lower_bound, self.upper_bound)
 
-        res = minimize(cost_fn, u0, method='SLSQP', bounds=bounds, tol=10e-6, options=dict(maxiter=1e5))
+        res = minimize(cost_fn, u0, method='SLSQP', bounds=bounds, tol=10e-6, options=dict(maxiter=1e8))
         control = res.x[:3]
         self.states_prediction = self.predictTrajectory(state, res.x)
         self.controls_prediction = res.x
@@ -167,8 +161,7 @@ class Drone:
         dy = retraj[:,1]-obstacles[:,1,None]
         r = np.hypot(dx, dy)
         rs = np.min(r)
-        cost_obs = 1/rs
-        return cost_obs
+        return 1/rs
     
     def costInterAgent(self, traj, drones):
         cost_igt = 0
@@ -177,8 +170,9 @@ class Drone:
                 continue
             for i in range(self.horizon_length):
                 pos_rel = drones[j].states_prediction[self.n_state*i:self.n_state*i+3] - traj[self.n_state*i:self.n_state*i+3]
-                # cost_igt += 1 / (1 + np.exp(BETA*(np.linalg.norm(pos_rel) - 2*ROBOT_RADIUS)))
-                cost_igt += (1 - np.tanh(BETA*(np.linalg.norm(pos_rel) - 2*ROBOT_RADIUS)))/2
+                pos_dis = np.linalg.norm(pos_rel)
+                if pos_dis < 3*ROBOT_RADIUS:
+                    cost_igt += (3*ROBOT_RADIUS-pos_dis)/(ROBOT_RADIUS)
         return cost_igt
 
     def observerObstacles(self):
@@ -237,9 +231,9 @@ class Drone:
             
         vec = (positions[:,0]-position[0])*UREF[0] + (positions[:,1]-position[1])*UREF[1]
         vec[np.where(vec<=0)]=np.inf
-        leader_index = np.argmin(vec)
-        if leader_index == self.index:   # is leader
+        if np.all(np.isinf(vec)): # is leader
             return -1
+        leader_index = np.argmin(vec)
         return leader_index
 
     def modeChanging(self, obstacles:np.array):
@@ -257,7 +251,7 @@ class Drone:
             return
 
         # Mode selection
-        if we <= 5*ROBOT_RADIUS:
+        if we <= ALPHA*ROBOT_RADIUS:
             self.mode = Mode.TAILGATING
             self.scaling_factor = -1
         else:
