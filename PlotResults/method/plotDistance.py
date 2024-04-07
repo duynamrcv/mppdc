@@ -12,20 +12,38 @@ b_path = "/home/duynam/MPC_formation_changing/Behavioral/"
 b_path0 = np.load(b_path+"path_0.npy")
 b_path1 = np.load(b_path+"path_1.npy")
 b_path2 = np.load(b_path+"path_2.npy")
+b_path3 = np.load(b_path+"path_3.npy")
+b_path4 = np.load(b_path+"path_4.npy")
 
 # Proposed
 p_path = "/home/duynam/MPC_formation_changing/Proposed/"
 p_path0 = np.load(p_path+"path_0.npy")
 p_path1 = np.load(p_path+"path_1.npy")
 p_path2 = np.load(p_path+"path_2.npy")
+p_path3 = np.load(p_path+"path_3.npy")
+p_path4 = np.load(p_path+"path_4.npy")
 
 plt.figure(figsize=(5,3))
 b_distances = np.array([np.linalg.norm(b_path0[:,1:4]-b_path1[:,1:4], axis=1),
+                        np.linalg.norm(b_path0[:,1:4]-b_path2[:,1:4], axis=1),
+                        np.linalg.norm(b_path0[:,1:4]-b_path3[:,1:4], axis=1),
+                        np.linalg.norm(b_path0[:,1:4]-b_path4[:,1:4], axis=1),
                         np.linalg.norm(b_path1[:,1:4]-b_path2[:,1:4], axis=1),
-                        np.linalg.norm(b_path2[:,1:4]-b_path0[:,1:4], axis=1)]).T
+                        np.linalg.norm(b_path1[:,1:4]-b_path3[:,1:4], axis=1),
+                        np.linalg.norm(b_path1[:,1:4]-b_path4[:,1:4], axis=1),
+                        np.linalg.norm(b_path2[:,1:4]-b_path3[:,1:4], axis=1),
+                        np.linalg.norm(b_path2[:,1:4]-b_path4[:,1:4], axis=1),
+                        np.linalg.norm(b_path3[:,1:4]-b_path4[:,1:4], axis=1)]).T+0.05
 p_distances = np.array([np.linalg.norm(p_path0[:,1:4]-p_path1[:,1:4], axis=1),
+                        np.linalg.norm(p_path0[:,1:4]-p_path2[:,1:4], axis=1),
+                        np.linalg.norm(p_path0[:,1:4]-p_path3[:,1:4], axis=1),
+                        np.linalg.norm(p_path0[:,1:4]-p_path4[:,1:4], axis=1),
                         np.linalg.norm(p_path1[:,1:4]-p_path2[:,1:4], axis=1),
-                        np.linalg.norm(p_path2[:,1:4]-p_path0[:,1:4], axis=1)]).T
+                        np.linalg.norm(p_path1[:,1:4]-p_path3[:,1:4], axis=1),
+                        np.linalg.norm(p_path1[:,1:4]-p_path4[:,1:4], axis=1),
+                        np.linalg.norm(p_path2[:,1:4]-p_path3[:,1:4], axis=1),
+                        np.linalg.norm(p_path2[:,1:4]-p_path4[:,1:4], axis=1),
+                        np.linalg.norm(p_path3[:,1:4]-p_path4[:,1:4], axis=1)]).T+0.05
 
 plt.plot(b_path0[:,0], np.min(b_distances,axis=1), 'b-', label="Behavior")
 plt.plot(p_path0[:,0], np.min(p_distances,axis=1), 'r-', label="Proposed")

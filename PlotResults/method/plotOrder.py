@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes,mark_inset
 
-NUM_UAV = 3
+NUM_UAV = 5
 
 ## Load comparison files
 # Behavior
@@ -13,25 +13,33 @@ b_path = "/home/duynam/MPC_formation_changing/Behavioral/"
 b_path0 = np.load(b_path+"path_0.npy")
 b_path1 = np.load(b_path+"path_1.npy")
 b_path2 = np.load(b_path+"path_2.npy")
+b_path3 = np.load(b_path+"path_3.npy")
+b_path4 = np.load(b_path+"path_4.npy")
 
 # Proposed
 p_path = "/home/duynam/MPC_formation_changing/Proposed/"
 p_path0 = np.load(p_path+"path_0.npy")
 p_path1 = np.load(p_path+"path_1.npy")
 p_path2 = np.load(p_path+"path_2.npy")
+p_path3 = np.load(p_path+"path_3.npy")
+p_path4 = np.load(p_path+"path_4.npy")
 
 b_headings = []
 for i in range(1,len(b_path0)):
     heading = b_path0[i,4:6]/np.linalg.norm(b_path0[i,4:6]) \
             + b_path1[i,4:6]/np.linalg.norm(b_path1[i,4:6]) \
-            + b_path2[i,4:6]/np.linalg.norm(b_path2[i,4:6])
+            + b_path2[i,4:6]/np.linalg.norm(b_path2[i,4:6]) \
+            + b_path3[i,4:6]/np.linalg.norm(b_path3[i,4:6]) \
+            + b_path4[i,4:6]/np.linalg.norm(b_path4[i,4:6])
     b_headings.append(np.linalg.norm(heading)/NUM_UAV)
 
 p_headings = []
 for i in range(1,len(p_path0)):
     heading = p_path0[i,4:6]/np.linalg.norm(p_path0[i,4:6]) \
             + p_path1[i,4:6]/np.linalg.norm(p_path1[i,4:6]) \
-            + p_path2[i,4:6]/np.linalg.norm(p_path2[i,4:6])
+            + p_path2[i,4:6]/np.linalg.norm(p_path2[i,4:6]) \
+            + p_path3[i,4:6]/np.linalg.norm(p_path3[i,4:6]) \
+            + p_path4[i,4:6]/np.linalg.norm(p_path4[i,4:6])
     p_headings.append(np.linalg.norm(heading)/NUM_UAV)
 
 

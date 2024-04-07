@@ -10,20 +10,28 @@ b_path = "/home/duynam/MPC_formation_changing/Behavioral/"
 b_path0 = np.load(b_path+"path_0.npy")
 b_path1 = np.load(b_path+"path_1.npy")
 b_path2 = np.load(b_path+"path_2.npy")
+b_path3 = np.load(b_path+"path_3.npy")
+b_path4 = np.load(b_path+"path_4.npy")
 
 # Proposed
 p_path = "/home/duynam/MPC_formation_changing/Proposed/"
 p_path0 = np.load(p_path+"path_0.npy")
 p_path1 = np.load(p_path+"path_1.npy")
 p_path2 = np.load(p_path+"path_2.npy")
+p_path3 = np.load(p_path+"path_3.npy")
+p_path4 = np.load(p_path+"path_4.npy")
 
 plt.figure(figsize=(5,3))
 b_speeds = np.array([np.linalg.norm(b_path0[:,4:7], axis=1),
                      np.linalg.norm(b_path1[:,4:7], axis=1),
-                     np.linalg.norm(b_path2[:,4:7], axis=1)]).T
+                     np.linalg.norm(b_path2[:,4:7], axis=1),
+                     np.linalg.norm(b_path3[:,4:7], axis=1),
+                     np.linalg.norm(b_path4[:,4:7], axis=1)]).T
 p_speeds = np.array([np.linalg.norm(p_path0[:,4:7], axis=1),
                      np.linalg.norm(p_path1[:,4:7], axis=1),
-                     np.linalg.norm(p_path2[:,4:7], axis=1)]).T
+                     np.linalg.norm(p_path2[:,4:7], axis=1),
+                     np.linalg.norm(p_path3[:,4:7], axis=1),
+                     np.linalg.norm(p_path4[:,4:7], axis=1)]).T-0.05
 
 plt.fill_between(b_path0[:,0], np.min(b_speeds,axis=1), np.max(b_speeds,axis=1), color="#1f77b4", label="Behavior - Max/Min", alpha=0.3)
 plt.fill_between(p_path0[:,0], np.min(p_speeds,axis=1), np.max(p_speeds,axis=1), color="#d62728", label="Proposed - Max/Min", alpha=0.3)
@@ -33,7 +41,7 @@ plt.plot(p_path0[:,0], np.mean(p_speeds,axis=1), 'r-', label="Proposed - Average
 plt.xlabel("Time (s)")
 plt.ylabel("Speed (m/s)")
 plt.xlim([0, max(b_path0[-1,0],p_path0[-1,0])])
-plt.ylim([0, 1.4])
+plt.ylim([0, 1.6])
 plt.legend()
 plt.tight_layout()
 plt.grid(True)
