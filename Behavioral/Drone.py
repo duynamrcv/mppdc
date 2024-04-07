@@ -76,7 +76,8 @@ class Drone:
             v_f = self.behaviorFormation(drones)
             v_o = self.behaviorObstacle(observed_obstacles)
             v_c = self.behaviorCollision(drones)
-            vel = W_nav*v_m + W_sep*v_f + W_obs*v_o + W_col*v_c
+            v_r = self.behaviorRandom()
+            vel = W_nav*v_m + W_sep*v_f + W_obs*v_o + W_col*v_c + W_r*v_r
         else:
             leader_idx = self.selectLeader(drones)
             # Behaviors for tailgating
@@ -84,7 +85,8 @@ class Drone:
             v_t = self.behaviorTailgating(drones,leader_idx)
             v_o = self.behaviorObstacle(observed_obstacles)
             v_c = self.behaviorCollision(drones)
-            vel = W_nav*v_m + W_sep*v_t + W_obs*v_o + W_col*v_c
+            v_r = self.behaviorRandom()
+            vel = W_nav*v_m + W_sep*v_t + W_obs*v_o + W_col*v_c + W_r*v_r
 
         control = (vel - self.state[3:])/self.timestep
 
@@ -159,12 +161,16 @@ class Drone:
             rs = np.linalg.norm(pos_rel)
             if rs >= DREF:
                 continue
-            dir = pos_rel/rs
+            dir = -pos_rel/rs
             # vel_col += dir*(1 - np.tanh(BETA*(rs - 2*ROBOT_RADIUS)))/2
-            vel_col += -dir*np.exp(-BETA*(rs-2*ROBOT_RADIUS))/(rs-2*ROBOT_RADIUS)
+            # vel_col += dir*np.exp(-BETA*(rs-2*ROBOT_RADIUS))/(rs-2*ROBOT_RADIUS)
             # vel_col += -1/2*(1/rs - 1/(2*ROBOT_RADIUS))**2*dir
+            vel_col += (3*ROBOT_RADIUS-rs)/ROBOT_RADIUS*dir
         vel_col /= (NUM_UAV-1)
         return vel_col
+    
+    def behaviorRandom(self):
+        return np.random.rand(self.n_control)
 
     def observerObstacles(self):
         observed_obstacles = []
@@ -183,9 +189,9 @@ class Drone:
             
         vec = (positions[:,0]-position[0])*UREF[0] + (positions[:,1]-position[1])*UREF[1]
         vec[np.where(vec<=0)]=np.inf
-        leader_index = np.argmin(vec)
-        if leader_index == self.index:   # is leader
+        if np.all(np.isinf(vec)): # is leader
             return -1
+        leader_index = np.argmin(vec)
         return leader_index
 
     def modeChanging(self, obstacles:np.array):
