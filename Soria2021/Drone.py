@@ -118,7 +118,7 @@ class Drone:
                 pos_rel = drones[j].states_prediction[self.n_state*i:self.n_state*i+3] \
                                                - traj[self.n_state*i:self.n_state*i+3]
                 cost_sep += (np.sum(pos_rel**2) - np.sum((TOPOLOGY[j,:]-TOPOLOGY[self.index,:])**2))**2
-        return cost_sep#/(NUM_UAV-1)
+        return cost_sep/(NUM_UAV-1)
 
     def costDirection(self, traj):
         cost_dir = 0
@@ -143,8 +143,7 @@ class Drone:
         dy = retraj[:,1]-obstacles[:,1,None]
         r = np.hypot(dx, dy)
         rs = np.min(r)
-        cost_obs = 1/rs
-        return cost_obs
+        return 1/rs
     
     def costInterAgent(self, traj, drones):
         cost_igt = 0
@@ -153,8 +152,9 @@ class Drone:
                 continue
             for i in range(self.horizon_length):
                 pos_rel = drones[j].states_prediction[self.n_state*i:self.n_state*i+3] - traj[self.n_state*i:self.n_state*i+3]
-                # cost_igt += 1 / (1 + np.exp(BETA*(np.linalg.norm(pos_rel) - 2*ROBOT_RADIUS)))
-                cost_igt += (1 - np.tanh(BETA*(np.linalg.norm(pos_rel) - 2*ROBOT_RADIUS)))/2
+                pos_dis = np.linalg.norm(pos_rel)
+                if pos_dis < 3*ROBOT_RADIUS:
+                    cost_igt += (3*ROBOT_RADIUS-pos_dis)/(ROBOT_RADIUS)
         return cost_igt
 
     def observerObstacles(self):
