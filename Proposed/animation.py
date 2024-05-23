@@ -2,7 +2,15 @@ from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import pickle
 from config import *
+
+percent = 0.3 
+width = 0.02
+export = True
+if export:
+    import cv2
+    image_array = []
 
 # Solid environment
 coords = [
@@ -10,20 +18,8 @@ coords = [
         [[-8,8], [0,8], [0,5], [10,3.5], [15,3.5], [20,8]]
     ]
 
-# For drone representation
-p1 = np.array([3*ROBOT_RADIUS / 4, 0, 0, 1]).T
-p2 = np.array([-3*ROBOT_RADIUS / 4, 0, 0, 1]).T
-p3 = np.array([0, 3*ROBOT_RADIUS / 4, 0, 1]).T
-p4 = np.array([0,-3*ROBOT_RADIUS / 4, 0, 1]).T
-
-def transformation_matrix(data):
-    x = data[0]; y = data[1]; z = data[2]; psi = data[3]
-    return np.array([[np.cos(psi), -np.sin(psi), 0, x],
-                     [np.sin(psi), np.cos(psi), 0, y],
-                     [0, 0, 1, z]])
-
 def getCircle(x,y,r):
-    theta = np.linspace( 0 , 2 * np.pi , 150 )   
+    theta = np.linspace( 0 , 2 * np.pi , 50 )   
     a = x + r * np.cos( theta )
     b = y + r * np.sin( theta )
     return a, b
@@ -37,18 +33,19 @@ def observerObstacles(positions):
                 observed_obstacles.append(obs)
     return np.array(observed_obstacles)
 
-path0 = np.load("path_0.npy")
-path1 = np.load("path_1.npy")
-path2 = np.load("path_2.npy")
-# ct = np.load("process_time.npy")
-# print(len(path0), len(path1), len(path2))
+def findCentroid(positions):
+    centroid = 0
+    for position in positions:
+        centroid += position[:2]
+    return centroid/NUM_UAV
 
-## time_stamp, x, y, z, vx, vy, vz, ax, ay, az, mode, scaling_factor
-length = len(path0)
-fig = plt.figure()
-plt.get_current_fig_manager().full_screen_toggle()
+with open('data.txt', 'rb') as file:
+    data = pickle.load(file)
+
+size = (6,6)
+plt.figure(figsize=size)
 ax = plt.axes()
-for i in range(length):
+for iter in range(data[0].shape[0]):
     ax.cla()
 
     # Plot solid environment
@@ -59,82 +56,58 @@ for i in range(length):
     ax.plot([], [], label="Environment surface", **kwargs)
 
     # Plot observed obstacles
-    obstacles = observerObstacles([path0[i,1:4], path1[i,1:4], path2[i,1:4]])
+    positions = []
+    for i in range(NUM_UAV):
+        positions.append(data[i][iter,1:4])
+    
+    centroid = findCentroid(positions)
+    
+    obstacles = observerObstacles(positions)
     if obstacles.shape[0] != 0:
         plt.scatter(obstacles[:,0], obstacles[:,1], label="Observed obstacle points")
 
     # Plot current trjectory
-    ax.plot(path0[:i,1], path0[:i,2], "-r", label="Drone 0")
-    ax.plot(path1[:i,1], path1[:i,2], "-g", label="Drone 1")
-    ax.plot(path2[:i,1], path2[:i,2], "-b", label="Drone 2")
+    for i in range(NUM_UAV):
+        path = data[i]
+        ax.plot(path[:iter,1], path[:iter,2], "-", label="Drone {}".format(i))
+
+        # Plot current drone
+        a, b = getCircle(path[iter,1], path[iter,2], ROBOT_RADIUS)
+        plt.plot(a, b, '-b')
+        plt.arrow(path[iter,1],  path[iter,2],
+                    path[iter,4]*percent,  path[iter,5]*percent,
+                    width=width, color='r')
 
     # Plot current formation
-    formation = np.array([[path0[i,1], path1[i,1], path2[i,1], path0[i,1]],
-                            [path0[i,2], path1[i,2], path2[i,2], path0[i,2]]]).T
-    ax.plot(formation[:,0], formation[:,1])
+    positions.append(positions[0])
+    formation = np.array(positions)
+    ax.plot(formation[:,0], formation[:,1], '-k')
 
-    # Plot current drones
-    # Drone1 
-    T = transformation_matrix([path0[i,1],path0[i,2],path0[i,3],
-                               math.atan2(path0[i,5], path0[i,4])])
-    p1_t = np.matmul(T, p1)
-    p2_t = np.matmul(T, p2)
-    p3_t = np.matmul(T, p3)
-    p4_t = np.matmul(T, p4)
-
-    ax.scatter( [p2_t[0], p3_t[0], p4_t[0]],
-                [p2_t[1], p3_t[1], p4_t[1]], s=20, c='k')
-    ax.scatter(p1_t[0], p1_t[1], s=20, c='r')
-
-    ax.plot([p1_t[0], p2_t[0]], [p1_t[1], p2_t[1]], 'k-')
-    ax.plot([p3_t[0], p4_t[0]], [p3_t[1], p4_t[1]], 'k-')
-
-    a, b = getCircle(path0[i,1], path0[i,2], ROBOT_RADIUS)
-    ax.plot(a, b, '--k')
-
-    # Drone 2
-    T = transformation_matrix([path1[i,1],path1[i,2],path1[i,3],
-                               math.atan2(path1[i,5], path1[i,4])])
-    p1_t = np.matmul(T, p1)
-    p2_t = np.matmul(T, p2)
-    p3_t = np.matmul(T, p3)
-    p4_t = np.matmul(T, p4)
-
-    ax.scatter( [p2_t[0], p3_t[0], p4_t[0]],
-                [p2_t[1], p3_t[1], p4_t[1]], s=20, c='k')
-    ax.scatter(p1_t[0], p1_t[1], s=20, c='r')
-
-    ax.plot([p1_t[0], p2_t[0]], [p1_t[1], p2_t[1]], 'k-')
-    ax.plot([p3_t[0], p4_t[0]], [p3_t[1], p4_t[1]], 'k-')
-    a, b = getCircle(path1[i,1], path1[i,2], ROBOT_RADIUS)
-    ax.plot(a, b, '--k')
-
-    # Drone 3
-    T = transformation_matrix([path2[i,1],path2[i,2],path2[i,3],
-                               math.atan2(path2[i,5], path2[i,4])])
-    p1_t = np.matmul(T, p1)
-    p2_t = np.matmul(T, p2)
-    p3_t = np.matmul(T, p3)
-    p4_t = np.matmul(T, p4)
-
-    ax.scatter( [p2_t[0], p3_t[0], p4_t[0]],
-                [p2_t[1], p3_t[1], p4_t[1]], s=20, c='k')
-    ax.scatter(p1_t[0], p1_t[1], s=20, c='r')
-
-    ax.plot([p1_t[0], p2_t[0]], [p1_t[1], p2_t[1]], 'k-')
-    ax.plot([p3_t[0], p4_t[0]], [p3_t[1], p4_t[1]], 'k-')
-    a, b = getCircle(path2[i,1], path2[i,2], ROBOT_RADIUS)
-    ax.plot(a, b, '--k')
+    
 
     plt.gcf().canvas.mpl_connect('key_release_event',
                                     lambda event:
                                     [exit(0) if event.key == 'escape' else None])
 
+    
     plt.grid(True)
     ax.axis('scaled')
     plt.legend()
-    plt.xlim([-9, 25])
-    fig.savefig("images/{:.6f}.png".format(time.time()))
+    plt.xlim([centroid[0]-5, centroid[0]+5])
+    plt.ylim([centroid[1]-5, centroid[1]+5])
+    plt.xlabel("x [m]")
+    plt.ylabel("y [m]")
+    plt.tight_layout()
     plt.pause(0.001)
+
+    if export:
+        file_name = "results/data.png"
+        plt.savefig(file_name)
+        img = cv2.imread(file_name)
+        image_array.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+if export:
+    import imageio
+    imageio.mimsave('results/results.gif', image_array)
 
 plt.show()

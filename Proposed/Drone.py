@@ -67,7 +67,7 @@ class Drone:
         self.horizon_length = horizon_length
 
         # History predictive horizon
-        self.states_prediction = np.zeros(self.n_state*horizon_length)
+        self.states_prediction = np.array(list(self.state)*horizon_length)
         self.controls_prediction = np.random.rand(self.n_control*self.horizon_length)
     
     def computeControlSignal(self, drones):
@@ -111,12 +111,12 @@ class Drone:
         c_nav = self.costNavigation(traj)
         c_obs = self.costObstacle(traj, obstacles)
         c_col = self.costInterAgent(traj, drones)
-        total = W_sep*c_sep + W_dir*c_dir + W_nav*c_nav + W_u*c_u + W_obs*c_obs + W_col*c_col
+        total = c_sep + c_dir + c_nav + c_u + c_obs + c_col
 
         return total
 
     def costControl(self, u):
-        return np.sum(u**2)
+        return W_u*np.sum(u**2)
     
     def costTracking(self, traj, pref):
         if pref is None:
@@ -125,7 +125,7 @@ class Drone:
         for i in range(self.horizon_length):
             pos_rel = pref[self.n_state*i:self.n_state*i+3] - traj[self.n_state*i:self.n_state*i+3]
             cost_tra += np.sum(pos_rel**2)
-        return cost_tra
+        return W_sep*cost_tra
 
     def costSeparation(self, traj, drones):
         cost_sep = 0
@@ -136,21 +136,21 @@ class Drone:
                 pos_rel = drones[j].states_prediction[self.n_state*i:self.n_state*i+3] \
                                                - traj[self.n_state*i:self.n_state*i+3]
                 cost_sep += (np.sum(pos_rel**2) - DREF**2)**2
-        return cost_sep/(NUM_UAV-1)
+        return W_sep*cost_sep
 
     def costDirection(self, traj):
         cost_dir = 0
         for i in range(self.horizon_length):
             vel = traj[self.n_state*i+3:self.n_state*(i+1)]
             cost_dir += (1 - np.sum(vel*UREF)**2/np.sum(vel**2))**2
-        return cost_dir
+        return W_dir*cost_dir
     
     def costNavigation(self, traj):
         cost_nav = 0
         for i in range(self.horizon_length):
             vel = traj[self.n_state*i+3:self.n_state*(i+1)]
             cost_nav += (np.sum(vel**2) - VREF**2)**2
-        return cost_nav
+        return W_nav*cost_nav
 
     def costObstacle(self, traj, obstacles):
         cost_obs = 0
@@ -160,8 +160,11 @@ class Drone:
         dx = retraj[:,0]-obstacles[:,0,None]
         dy = retraj[:,1]-obstacles[:,1,None]
         r = np.hypot(dx, dy)
-        rs = np.min(r)
-        return 1/rs
+        rs = np.min(r,axis=0)
+        for i in range(self.horizon_length):
+            cost_obs += 1/(1 + np.exp(4*(rs[i] - ROBOT_RADIUS)))
+
+        return W_obs*cost_obs
     
     def costInterAgent(self, traj, drones):
         cost_igt = 0
@@ -172,8 +175,8 @@ class Drone:
                 pos_rel = drones[j].states_prediction[self.n_state*i:self.n_state*i+3] - traj[self.n_state*i:self.n_state*i+3]
                 pos_dis = np.linalg.norm(pos_rel)
                 if pos_dis < 3*ROBOT_RADIUS:
-                    cost_igt += (3*ROBOT_RADIUS-pos_dis)/(ROBOT_RADIUS)
-        return cost_igt
+                    cost_igt += (3*ROBOT_RADIUS-pos_dis)/(2*ROBOT_RADIUS)
+        return W_col*cost_igt
 
     def observerObstacles(self):
         observed_obstacles = []
@@ -199,7 +202,7 @@ class Drone:
             next_velocity = velocity + control*self.nmpc_timestep
             state = np.concatenate([next_position, next_velocity])
             trajectory.append(state)
-        return np.array(trajectory).reshape((state.shape[0]*self.horizon_length))
+        return np.array(trajectory).reshape((self.n_state*self.horizon_length))
 
     def getTrajectoryFormation(self, drones):
         traj_ref = np.zeros(self.n_state*self.horizon_length)

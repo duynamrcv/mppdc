@@ -3,7 +3,7 @@ import time
 import matplotlib.pyplot as plt
 
 TIMESTEP = 0.1
-ROBOT_RADIUS = 0.3
+ROBOT_RADIUS = 0.2
 SENSING_RADIUS = 3.0
 EPSILON = 0.1
 NMPC_SCALE = 3
@@ -20,11 +20,11 @@ VREF = 1.0
 UREF = np.array([1,0,0])
 DREF = 3*ROBOT_RADIUS
 
-W_sep = 5.0
+W_sep = 2.0
 W_dir = 1.0
-W_nav = 15.0
+W_nav = 5.0
 W_u = 4e-1
-W_obs = 15.0
+W_obs = 5.0
 W_col = 2.0
 
 # Scenario
