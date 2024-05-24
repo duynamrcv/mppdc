@@ -20,12 +20,12 @@ VREF = 1.0
 UREF = np.array([1,0,0])
 DREF = 3*ROBOT_RADIUS
 
-W_sep = 1.0
+W_sep = 0.1
 W_dir = 1.0
-W_nav = 5.0
+W_nav = 0.1
 W_u = 4e-1
-W_obs = 5.0
-W_col = 1.0
+W_obs = 10.0
+W_col = 2.0
 
 # Scenario
 STARTS = np.array([
