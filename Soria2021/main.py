@@ -43,11 +43,12 @@ if __name__ == "__main__":
     finally:
         print("[INFO] Saving")
         # Saving
+        import pickle
+        data = {}
         for i in range(NUM_UAV):
-            drone = drones[i]
-            path = np.array(drone.path)
-            np.save("path_{}.npy".format(drone.index), path)
-            np.save("process_time.npy", compute_times)
+            data[i] = np.array(drones[i].path)
+        with open('data.txt', 'wb') as file:
+            pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
 
         compute_times = np.array(compute_times)
         print("Average time: {:.6}s".format(compute_times.mean()))
