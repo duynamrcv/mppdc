@@ -21,7 +21,7 @@ with open('data.txt', 'rb') as file:
 ## Plot
 ## time_stamp, x, y, z, vx, vy, vz, ax, ay, az, mode, scaling_factor, gx, gy, gz, gvx, gvy, gvz
 # Plot motion path
-plt.figure(figsize=(9,3))
+plt.figure(figsize=(9,3.5))
 # Plot solid environment
 kwargs = {'color': 'k', 'linewidth': 2, 'linestyle': '-'}
 for coord in coords:
