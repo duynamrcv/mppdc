@@ -1,6 +1,5 @@
 .vscode
 **/__pycache__/
 **/images
-**/results/
 **.npy
 **/data.png
