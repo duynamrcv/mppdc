@@ -76,8 +76,7 @@ class Drone:
             v_f = self.behaviorFormation(drones)
             v_o = self.behaviorObstacle(observed_obstacles)
             v_c = self.behaviorCollision(drones)
-            v_r = self.behaviorRandom()
-            vel = W_nav*v_m + W_sep*v_f + W_obs*v_o + W_col*v_c + W_r*v_r
+            vel = W_nav*v_m + W_sep*v_f + W_obs*v_o + W_col*v_c
         else:
             leader_idx = self.selectLeader(drones)
             # Behaviors for tailgating
@@ -85,8 +84,7 @@ class Drone:
             v_t = self.behaviorTailgating(drones,leader_idx)
             v_o = self.behaviorObstacle(observed_obstacles)
             v_c = self.behaviorCollision(drones)
-            v_r = self.behaviorRandom()
-            vel = W_nav*v_m + W_sep*v_t + W_obs*v_o + W_col*v_c + W_r*v_r
+            vel = W_nav*v_m + W_sep*v_t + W_obs*v_o + W_col*v_c
 
         control = (vel - self.state[3:])/self.timestep
 
@@ -145,11 +143,7 @@ class Drone:
             rs = np.min(r)
             rsidx = np.argmin(r)
             dir = np.array([dx[rsidx],dy[rsidx], 0])/rs
-            # if rs <= ROBOT_RADIUS:
-            #     return np.ones(self.n_control)*np.inf
-            # vel_obs += dir*(1 - np.tanh(BETA*(rs - ROBOT_RADIUS)))/2
             vel_obs += dir*np.exp(-BETA*(rs-ROBOT_RADIUS))/(rs-ROBOT_RADIUS)
-            # vel_obs += -1/2*(1/rs - 1/ROBOT_RADIUS)**2*dir
         return vel_obs/label.shape[0]
     
     def behaviorCollision(self, drones):
@@ -162,15 +156,9 @@ class Drone:
             if rs >= DREF:
                 continue
             dir = -pos_rel/rs
-            # vel_col += dir*(1 - np.tanh(BETA*(rs - 2*ROBOT_RADIUS)))/2
-            # vel_col += dir*np.exp(-BETA*(rs-2*ROBOT_RADIUS))/(rs-2*ROBOT_RADIUS)
-            # vel_col += -1/2*(1/rs - 1/(2*ROBOT_RADIUS))**2*dir
             vel_col += (3*ROBOT_RADIUS-rs)/ROBOT_RADIUS*dir
         vel_col /= (NUM_UAV-1)
         return vel_col
-    
-    def behaviorRandom(self):
-        return np.random.rand(self.n_control)
 
     def observerObstacles(self):
         observed_obstacles = []
