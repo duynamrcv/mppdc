@@ -17,4 +17,6 @@ python3 animation.py
 ```
 
 ## Results
-<a href="Proposed/results/results.gif"><img src="Proposed/results/results.gif" alt="" width="50%" ></a>
+| Scenario 1 | Scenario 2 |
+| :---:      |     :---:  |
+| <img src="Proposed/results/results_scen1.gif" alt="" width="100%"/> | <img src="Proposed/results/results_scen2.gif" alt="" width="100%"/> |
