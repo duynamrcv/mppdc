@@ -36,5 +36,6 @@ STARTS = np.array([
     [-8., 4., 5., 0, 0, 0],
 ])
 X_GOAL = 22.
-env_file = "../Environment/environment_1.npy"
-OBSTACLES = np.load(env_file)
+SCENARIO = 1
+OBSTACLES = np.load("../Environment/environment_{}.npy".format(SCENARIO))
+SAVE_FILE = "data_{}.txt".format(SCENARIO)
