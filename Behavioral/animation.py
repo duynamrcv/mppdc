@@ -13,9 +13,15 @@ if export:
     image_array = []
 
 # Solid environment
-coords = [
-        [[-8,-2], [0,-2], [0,1], [ 5,2.5], [15,2.5], [20,-2]],
-        [[-8,8], [0,8], [0,5], [10,3.5], [15,3.5], [20,8]]
+if SCENARIO == 1:
+    coords = [
+            [[-8,-2], [0,-2], [0,1], [ 5,2.5], [15,2.5], [20,-2]],
+            [[-8,8], [0,8], [0,5], [10,3.5], [15,3.5], [20,8]]
+        ]
+else:
+    coords = [
+        [[-8,-2], [0,-2], [0,1], [5,1.5], [5,-2], [13,-2], [13,2.5], [18,2.5], [18,-2], [20,-2]],
+        [[-8, 8], [0, 8], [0,5], [5,5.0], [5, 8], [13, 8], [13,3.5], [18,3.5], [18, 8], [20, 8]]
     ]
 
 def getCircle(x,y,r):
@@ -39,7 +45,7 @@ def findCentroid(positions):
         centroid += position[:2]
     return centroid/NUM_UAV
 
-with open('data.txt', 'rb') as file:
+with open(SAVE_FILE, 'rb') as file:
     data = pickle.load(file)
 
 size = (6,6)

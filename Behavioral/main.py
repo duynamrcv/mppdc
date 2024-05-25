@@ -47,7 +47,7 @@ if __name__ == "__main__":
         data = {}
         for i in range(NUM_UAV):
             data[i] = np.array(drones[i].path)
-        with open('data.txt', 'wb') as file:
+        with open(SAVE_FILE, 'wb') as file:
             pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
 
         compute_times = np.array(compute_times)
