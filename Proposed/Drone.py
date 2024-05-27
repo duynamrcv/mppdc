@@ -35,6 +35,7 @@ class Drone:
         
         # Store drone path
         self.path = [np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor]])]
+        self.errors = []
 
     def updateState(self, control:np.array, dt:float):
         """
@@ -95,6 +96,12 @@ class Drone:
         control = res.x[:3]
         self.states_prediction = self.predictTrajectory(state, res.x)
         self.controls_prediction = res.x
+
+        # For save error
+        if traj_ref is None:
+            self.errors.append(0.)
+        else:
+            self.errors.append(np.linalg.norm(state[:3]-traj_ref[:3]))
 
         return control
 

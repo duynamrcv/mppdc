@@ -17,11 +17,11 @@ if SCENARIO == 1:
         ]
 else:
     coords = [
-        [[-8,-2], [0,-2], [0,1.5], [5,1], [5,-2], [13,-2], [13,2.5], [18,2.5], [18,-2], [20,-2]],
-        [[-8, 8], [0, 8], [0,5.0], [5,5], [5, 8], [13, 8], [13,3.5], [18,3.5], [18, 8], [20, 8]]
+        [[-8,-2], [0,-2], [0,1], [5,1.5], [5,-2], [13,-2], [13,2.5], [18,2.5], [18,-2], [20,-2]],
+        [[-8, 8], [0, 8], [0,5], [5,5.0], [5, 8], [13, 8], [13,3.5], [18,3.5], [18, 8], [20, 8]]
     ]
 
-with open('data.txt', 'rb') as file:
+with open(SAVE_FILE, 'rb') as file:
     data = pickle.load(file)
 
 ## Plot
@@ -36,7 +36,7 @@ for coord in coords:
 plt.plot([], [], label="Environment surface", **kwargs)
 
 for i in range(NUM_UAV):
-    path = data[i]
+    path = data[i]['path']
     plt.plot(path[:,1], path[:,2], label="Drone {}".format(i))
 plt.legend()
 plt.xlabel("x (m)")
@@ -49,7 +49,7 @@ plt.tight_layout()
 plt.figure(figsize=(6,3))
 speeds = []
 for i in range(NUM_UAV):
-    path = data[i]
+    path = data[i]['path']
     speeds.append(np.linalg.norm(path[:,4:7], axis=1))
 speeds = np.array(speeds).T
 plt.fill_between(path[:,0], np.min(speeds,axis=1), np.max(speeds,axis=1), color="#1f77b4", label="Max/Min", alpha=0.3)
@@ -61,31 +61,13 @@ plt.legend()
 plt.tight_layout()
 plt.grid(True)
 
-# Plot distance
-plt.figure(figsize=(6,3))
-distances = []
-for i in range(NUM_UAV-1):
-    pathi = data[i]
-    for j in range(i+1,NUM_UAV):
-        pathj = data[j]
-        distances.append(np.linalg.norm(pathi[:,1:4]-pathj[:,1:4], axis=1))
-distances = np.array(distances).T
-plt.plot(pathi[:,0], np.min(distances,axis=1), 'b-', label="")
-plt.plot([pathi[0,0], pathi[-1,0]], [2*ROBOT_RADIUS, 2*ROBOT_RADIUS], 'k--', label="Safety radius")
-plt.xlabel("Time (s)")
-plt.ylabel("Inter-agent distance $\min(d_{ij})$(m)")
-plt.xlim([0, pathi[-1,0]])
-plt.legend()
-plt.tight_layout()
-plt.grid(True)
-
 # Plot order
 plt.figure(figsize=(6,3))
 headings = []
 for i in range(1,len(path)):
     heading = 0
     for j in range(NUM_UAV):
-        heading += data[j][i,4:6]/np.linalg.norm(data[j][i,4:6])
+        heading += data[j]['path'][i,4:6]/np.linalg.norm(data[j]['path'][i,4:6])
     headings.append(np.linalg.norm(heading)/NUM_UAV)
 plt.plot(path[1:,0], headings, 'b-')
 plt.xlabel("Time (s)")
@@ -101,7 +83,7 @@ size = 10
 x = np.arange(0,path.shape[0],size)
 num_state = 0
 for i in range(NUM_UAV):
-    num_state += data[i][:,10]
+    num_state += data[i]['path'][:,10]
 num_state = num_state[x]
 
 plt.bar(path[:,0][x], num_state, label="Tailgating")
@@ -113,5 +95,27 @@ plt.ylim([0, NUM_UAV])
 plt.tight_layout()
 plt.legend()
 
+# Plot error
+plt.figure(figsize=(6,3))
+for i in range(NUM_UAV):
+    plt.plot(data[i]['path'][1:,0], data[i]['error'])
+
+# Plot distance
+plt.figure(figsize=(6,3))
+distances = []
+for i in range(NUM_UAV-1):
+    pathi = data[i]['path']
+    for j in range(i+1,NUM_UAV):
+        pathj = data[j]['path']
+        distances.append(np.linalg.norm(pathi[:,1:4]-pathj[:,1:4], axis=1))
+distances = np.array(distances).T
+plt.plot(pathi[:,0], np.min(distances,axis=1), 'b-', label="")
+plt.plot([pathi[0,0], pathi[-1,0]], [2*ROBOT_RADIUS, 2*ROBOT_RADIUS], 'k--', label="Safety radius")
+plt.xlabel("Time (s)")
+plt.ylabel("Inter-agent distance $\min(d_{ij})$(m)")
+plt.xlim([0, pathi[-1,0]])
+plt.legend()
+plt.tight_layout()
+plt.grid(True)
 
 plt.show()
