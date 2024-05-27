@@ -101,7 +101,7 @@ class Drone:
         if traj_ref is None:
             self.errors.append(0.)
         else:
-            self.errors.append(np.linalg.norm(state[:3]-traj_ref[:3]))
+            self.errors.append(np.linalg.norm(self.states_prediction[:3]-traj_ref[:3]))
 
         return control
 
