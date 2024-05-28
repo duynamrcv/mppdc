@@ -78,7 +78,7 @@ plt.tight_layout()
 plt.grid(True)
 
 # Plot number of correlation
-plt.figure(figsize=(6,3))
+plt.figure(figsize=(6,2))
 size = 10
 x = np.arange(0,path.shape[0],size)
 num_state = 0
@@ -89,11 +89,12 @@ num_state = num_state[x]
 plt.bar(path[:,0][x], num_state, label="Tailgating")
 plt.bar(path[:,0][x], NUM_UAV-num_state, bottom=num_state, label="Formation")
 plt.xlabel("Time (s)")
-plt.ylabel("Number of Robot")
+plt.ylabel("Number of Robots")
 plt.xlim([-1, path[-1,0]+1])
 plt.ylim([0, NUM_UAV])
 plt.tight_layout()
 plt.legend()
+plt.savefig("../PlotResults/results/coorelation_scen{}.pdf".format(SCENARIO), format="pdf", bbox_inches="tight")
 
 # Plot error
 plt.figure(figsize=(6,3))
