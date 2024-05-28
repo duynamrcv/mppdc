@@ -144,7 +144,8 @@ class Drone:
             rsidx = np.argmin(r)
             dir = np.array([dx[rsidx],dy[rsidx], 0])/rs
             vel_obs += dir*np.exp(-BETA*(rs-ROBOT_RADIUS))/(rs-ROBOT_RADIUS)
-        return vel_obs/label.shape[0]
+            # vel_obs += dir*(BETA*ROBOT_RADIUS-rs)/((BETA-2)*ROBOT_RADIUS)
+        return vel_obs
     
     def behaviorCollision(self, drones):
         vel_col = np.zeros(self.n_control)
@@ -197,7 +198,7 @@ class Drone:
             return
 
         # Mode selection
-        if we <= 5*ROBOT_RADIUS:
+        if we <= ALPHA*ROBOT_RADIUS:
             self.mode = Mode.TAILGATING
             self.scaling_factor = -1
         else:

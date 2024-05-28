@@ -51,7 +51,7 @@ with open(SAVE_FILE, 'rb') as file:
 size = (6,6)
 plt.figure(figsize=size)
 ax = plt.axes()
-for iter in range(data[0].shape[0]):
+for iter in range(data[0]['path'].shape[0]):
     ax.cla()
 
     # Plot solid environment
@@ -64,7 +64,7 @@ for iter in range(data[0].shape[0]):
     # Plot observed obstacles
     positions = []
     for i in range(NUM_UAV):
-        positions.append(data[i][iter,1:4])
+        positions.append(data[i]['path'][iter,1:4])
     
     centroid = findCentroid(positions)
     
@@ -74,7 +74,7 @@ for iter in range(data[0].shape[0]):
 
     # Plot current trjectory
     for i in range(NUM_UAV):
-        path = data[i]
+        path = data[i]['path']
         ax.plot(path[:iter,1], path[:iter,2], "-", label="Drone {}".format(i))
 
         # Plot current drone
