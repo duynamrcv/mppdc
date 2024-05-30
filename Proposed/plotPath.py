@@ -94,7 +94,7 @@ plt.xlim([-1, path[-1,0]+1])
 plt.ylim([0, NUM_UAV])
 plt.tight_layout()
 plt.legend()
-plt.savefig("../PlotResults/results/coorelation_scen{}.pdf".format(SCENARIO), format="pdf", bbox_inches="tight")
+plt.savefig("../PlotResults/results/correlation_scen{}.pdf".format(SCENARIO), format="pdf", bbox_inches="tight")
 
 # Plot error
 plt.figure(figsize=(6,3))
