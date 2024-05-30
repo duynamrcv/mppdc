@@ -30,7 +30,8 @@ class Drone:
         self.radius = radius
         
         # Store drone path
-        self.path = [np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor], self.gt])]
+        self.path = [np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor]])]
+        self.errors = []
 
     def updateState(self, control:np.array, dt:float):
         """
@@ -56,7 +57,7 @@ class Drone:
         # Store
         if self.gt is None:
             self.gt = self.state
-        self.path.append(np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor], self.gt]))
+        self.path.append(np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor]]))
 
     def setupController(self, dt=0.1):
         # nmpc timestep
@@ -103,20 +104,21 @@ class Drone:
         v_f = np.zeros(self.n_control)
         gt = 0
         for i in range(NUM_UAV):
+            gt += drones[i].state[:3] - (TOPOLOGY[i,:] - TOPOLOGY[self.index,:])*self.scaling_factor
             if i == self.index:
                 continue
             v_f += (drones[i].state[:3]-self.state[:3]) -\
                    (TOPOLOGY[i,:] - TOPOLOGY[self.index,:])*self.scaling_factor
-            gt += drones[i].state[:3] - (TOPOLOGY[i,:] - TOPOLOGY[self.index,:])*self.scaling_factor
-        self.gt = np.concatenate([gt,self.state[3:]])/(NUM_UAV-1)
+
+        self.errors.append(np.linalg.norm(self.state[:3]-gt/NUM_UAV))
         return v_f
     
     def behaviorTailgating(self, drones, leader_idx):
         if leader_idx == -1:
-            self.gt = self.state
+            self.errors.append(0.)
             return self.state[3:]
         v_t = drones[leader_idx].state[:3] - self.state[:3] - DREF*UREF + drones[leader_idx].state[3:]
-        self.gt = drones[leader_idx].state - np.concatenate([DREF*UREF, drones[leader_idx].state[3:]])
+        self.errors.append(np.linalg.norm(self.state[:3]-(drones[leader_idx].state[:3]-DREF*UREF)))
         return v_t
 
     def behaviorObstacle(self, obstacles):
