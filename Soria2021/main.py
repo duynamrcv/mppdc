@@ -46,7 +46,10 @@ if __name__ == "__main__":
         import pickle
         data = {}
         for i in range(NUM_UAV):
-            data[i] = np.array(drones[i].path)
+            log = {}
+            log['path'] = np.array(drones[i].path)
+            log['error'] = np.array(drones[i].errors)
+            data[i] = log
         with open(SAVE_FILE, 'wb') as file:
             pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
 

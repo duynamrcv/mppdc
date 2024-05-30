@@ -25,8 +25,6 @@ class Drone:
         self.n_state = 6
         self.n_control = 3
 
-        self.gt = self.state
-
         # Drone radius
         self.radius = radius
 
@@ -35,7 +33,8 @@ class Drone:
         self.control_min = [-0.0,-2.0, 0.0]
         
         # Store drone path
-        self.path = [np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor], self.gt])]
+        self.path = [np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor]])]
+        self.errors = []
 
     def updateState(self, control:np.array, dt:float):
         """
@@ -54,9 +53,7 @@ class Drone:
         self.time_stamp = self.time_stamp + dt
 
         # Store
-        if self.gt is None:
-            self.gt = self.state
-        self.path.append(np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor], self.gt]))
+        self.path.append(np.concatenate([[self.time_stamp], self.state, self.control, [self.mode.value, self.scaling_factor]]))
 
     def setupController(self, horizon_length=20, dt=0.1):
         # Boundary
@@ -91,6 +88,12 @@ class Drone:
         self.states_prediction = self.predictTrajectory(state, res.x)
         self.controls_prediction = res.x
 
+        # For save error
+        pos_des = 0
+        for i in range(NUM_UAV):
+            pos_des += drones[i].state[:3] - (TOPOLOGY[i,:]-TOPOLOGY[self.index,:])
+
+        self.errors.append(np.linalg.norm(self.state[:3]-pos_des/NUM_UAV))
         return control
 
     def costFunction(self, u, state, drones, obstacles):

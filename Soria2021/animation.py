@@ -20,8 +20,8 @@ if SCENARIO == 1:
         ]
 else:
     coords = [
-        [[-8,-2], [0,-2], [0,1.5], [5,1], [5,-2], [13,-2], [13,2.5], [18,2.5], [18,-2], [20,-2]],
-        [[-8, 8], [0, 8], [0,5.0], [5,5], [5, 8], [13, 8], [13,3.5], [18,3.5], [18, 8], [20, 8]]
+        [[-8,-2], [0,-2], [0,1], [5,1.5], [5,-2], [13,-2], [13,2.5], [18,2.5], [18,-2], [20,-2]],
+        [[-8, 8], [0, 8], [0,5], [5,5.0], [5, 8], [13, 8], [13,3.5], [18,3.5], [18, 8], [20, 8]]
     ]
 
 def getCircle(x,y,r):
@@ -51,7 +51,7 @@ with open(SAVE_FILE, 'rb') as file:
 size = (6,6)
 plt.figure(figsize=size)
 ax = plt.axes()
-for iter in range(data[0].shape[0]):
+for iter in range(data[0]['path'].shape[0]):
     ax.cla()
 
     # Plot solid environment
@@ -64,7 +64,7 @@ for iter in range(data[0].shape[0]):
     # Plot observed obstacles
     positions = []
     for i in range(NUM_UAV):
-        positions.append(data[i][iter,1:4])
+        positions.append(data[i]['path'][iter,1:4])
     
     centroid = findCentroid(positions)
     
@@ -74,7 +74,7 @@ for iter in range(data[0].shape[0]):
 
     # Plot current trjectory
     for i in range(NUM_UAV):
-        path = data[i]
+        path = data[i]['path']
         ax.plot(path[:iter,1], path[:iter,2], "-", label="Drone {}".format(i))
 
         # Plot current drone
@@ -104,6 +104,7 @@ for iter in range(data[0].shape[0]):
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
     plt.tight_layout()
+    plt.title("Time: {:.3f}s".format(path[iter,0]))
     plt.pause(0.001)
 
     if export:
