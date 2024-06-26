@@ -1,4 +1,9 @@
-# Obstacle-aware Predictive-based Distributed Formation Changing Strategy for Multi-robot in Narrow Space Environments
+# MPPDC: Model Prediction-based Perceptual Deformation Control for Multiple Robots in Narrow Space Environments
+
+This repository presents the following article in Python:
+
+Duy-Nam Bui, Manh Duong Phung, Hung Pham Duy, "**MPPDC: Model Prediction-based Perceptual Deformation Control for Multiple Robots in Narrow Space Environments**," *Preprint*. 
+<!-- [[**IEEE** *Xplore*](https://ieeexplore.ieee.org/abstract/document/9732989)] [[Citation](#citation)] -->
 
 ## Installation
 ```
@@ -16,6 +21,7 @@ The data will be saved in `data.txt` file. To view animation, please run:
 python3 animation.py
 ```
 
+For the comparisons, we implement two approaches named *Behavior-based Deformation Control (BDC)* and *Model Prediction-based Formation Control (MPFC)*
 ## Results
 | Scenario 1 | Scenario 2 |
 | :---:      |     :---:  |
