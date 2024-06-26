@@ -15,10 +15,15 @@ if SCENARIO == 1:
             [[-8,-2], [0,-2], [0,1], [ 5,2.5], [15,2.5], [20,-2]],
             [[-8,8], [0,8], [0,5], [10,3.5], [15,3.5], [20,8]]
         ]
-else:
+elif SCENARIO == 2:
     coords = [
         [[-8,-2], [0,-2], [0,1], [5,1.5], [5,-2], [13,-2], [13,2.5], [18,2.5], [18,-2], [20,-2]],
         [[-8, 8], [0, 8], [0,5], [5,5.0], [5, 8], [13, 8], [13,3.5], [18,3.5], [18, 8], [20, 8]]
+    ]
+elif SCENARIO == 3:
+    coords = [
+        [[-8,-2], [0,-2], [0,1], [18,1], [18,-2], [20,-2]],
+        [[-8, 8], [0, 8], [0,6], [ 5,4], [10, 4], [15, 2], [18, 2], [18, 8], [20, 8]]
     ]
 
 with open(SAVE_FILE, 'rb') as file:
@@ -78,7 +83,9 @@ plt.tight_layout()
 plt.grid(True)
 
 # Plot number of correlation
-plt.figure(figsize=(6,2))
+fig = plt.figure(figsize=(6,2))
+ax = fig.add_subplot(111, label="1")
+ax2 = fig.add_subplot(111, label="2", frame_on=False)
 size = 10
 x = np.arange(0,path.shape[0],size)
 num_state = 0
@@ -86,14 +93,30 @@ for i in range(NUM_UAV):
     num_state += data[i]['path'][:,10]
 num_state = num_state[x]
 
-plt.bar(path[:,0][x], num_state, label="Tailgating")
-plt.bar(path[:,0][x], NUM_UAV-num_state, bottom=num_state, label="Formation")
-plt.xlabel("Time (s)")
-plt.ylabel("Number of Robots")
-plt.xlim([-1, path[-1,0]+1])
-plt.ylim([0, NUM_UAV])
+scales = []
+for i in range(NUM_UAV):
+    path = data[i]['path']
+    scale = path[:,11]
+    scale[scale==-1]=0
+    scales.append(scale)
+scales = np.array(scales).T
+
+ax.bar(path[:,0][x], num_state, label="Tailgating")
+ax.bar(path[:,0][x], NUM_UAV-num_state, bottom=num_state, label="Formation")
+ax2.fill_between(path[:,0][x], np.min(scales,axis=1)[x], np.max(scales,axis=1)[x], color="k", label="Max/Min", alpha=0.3)
+ax2.plot(path[:,0][x], np.mean(scales,axis=1)[x], 'k-', label="Average")
+ax.set_xlabel("Time (s)")
+ax2.set_ylabel("Scaling factor $\kappa$")
+ax.set_ylabel("Number of Robots")
+ax2.yaxis.tick_right()
+ax2.yaxis.set_label_position('right') 
+ax2.tick_params(bottom=False, labelbottom=False)
+plt.xlim([0, path[-1,0]])
+ax.set_ylim([0, NUM_UAV])
+ax2.set_ylim(-0.1, 1.1)
 plt.tight_layout()
-plt.legend()
+ax.legend()
+ax2.legend()
 plt.savefig("../PlotResults/results/correlation_scen{}.pdf".format(SCENARIO), format="pdf", bbox_inches="tight")
 
 # Plot error

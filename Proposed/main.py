@@ -54,6 +54,7 @@ if __name__ == "__main__":
             pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
 
         compute_times = np.array(compute_times)
+        np.save('times.npy', compute_times)
         print("Average time: {:.6}s".format(compute_times.mean()))
         print("Max time: {:.6}s".format(compute_times.max()))   
         print("Min time: {:.6}s".format(compute_times.min()))
