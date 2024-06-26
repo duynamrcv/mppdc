@@ -9,7 +9,7 @@ SCENARIO = 2
 ## Load comparison files
 methods = ["Behavioral", "Soria2021", "Proposed"]
 colors = ["#1f77b4", "#2ca02c", "#d62728"]
-names = ["BC-Changing", "MPC-Rigid", "Our"]
+names = ["BDC", "MPFC", "MPPDC"]
 styles = ["-", "--", "-."]
 
 plt.figure(figsize=(5.5,2.5))

@@ -5,12 +5,12 @@ import pickle
 
 NUM_UAV = 5
 ROBOT_RADIUS = 0.2
-SCENARIO = 2
+SCENARIO = 1
 
 ## Load comparison files
 methods = ["Behavioral", "Soria2021", "Proposed"]
 colors = ["#1f77b4", "#2ca02c", "#d62728"]
-names = ["BC-Changing", "MPC-Rigid", "Our"]
+names = ["BDC", "MPFC", "MPPDC"]
 styles = ["-", "--", "-."]
 
 plt.figure(figsize=(5.5,2.5))
