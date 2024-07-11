@@ -10,13 +10,13 @@ Duy-Nam Bui, Manh Duong Phung, Hung Pham Duy, "**MPPDC: Model Prediction-based P
 
 ## Installation
 ```
-git clone git@github.com:duynamrcv/mpc_formation_changing.git
-cd mpc_formation_changing
+git clone git@github.com:duynamrcv/mppdc.git
+cd mppdc
 pip install -r requirement.txt
 ```
 
 ## Demo
-The proposed method is in `Proposed` directory. To run the simulation, please run:
+The proposed method is in `MPPDC` directory. To run the simulation, please run:
 ```
 cd Proposed
 python3 main.py
