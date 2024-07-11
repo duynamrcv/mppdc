@@ -2,8 +2,11 @@
 
 This repository presents the following article in Python:
 
+
 Duy-Nam Bui, Manh Duong Phung, Hung Pham Duy, "**MPPDC: Model Prediction-based Perceptual Deformation Control for Multiple Robots in Narrow Space Environments**," *Submitted*. 
 <!-- [[**IEEE** *Xplore*](https://ieeexplore.ieee.org/abstract/document/9732989)] [[Citation](#citation)] -->
+
+*The article is under review. If the Journal's editorial board does not immediately request to publish the source code, we may publish the final source code when the article is accepted.*
 
 ## Control digram
 <p align="center"><img src="results/diagram.png" alt="" width="100%"/></p>
